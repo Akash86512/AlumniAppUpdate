@@ -232,30 +232,34 @@ public class PostFragment extends Fragment {
     }
 
     String postid;
+
     void update()
     {
-
+        mAuth = FirebaseAuth.getInstance();
+        user_id = mAuth.getCurrentUser().getUid();
         String text=Posttext.getText().toString();
 
             postid = mDatabaseRef.push().getKey();
             //all post
 
-            mDatabaseRefallpost.child(postid).child("PostId").setValue(postid);
-            mDatabaseRefallpost.child(postid).child("PostOwnerName").setValue(userName);
-            mDatabaseRefallpost.child(postid).child("PostImage").setValue(url);
-            mDatabaseRefallpost.child(postid).child("PostText").setValue(text);
-            mDatabaseRefallpost.child(postid).child("PostOwnerImage").setValue(imageurl);
+            mDatabaseRefallpost.child(postid).child("postid").setValue(postid);
+            mDatabaseRefallpost.child(postid).child("userid").setValue(user_id);
+            mDatabaseRefallpost.child(postid).child("postownername").setValue(userName);
+            mDatabaseRefallpost.child(postid).child("postimage").setValue(url);
+            mDatabaseRefallpost.child(postid).child("posttext").setValue(text);
+            mDatabaseRefallpost.child(postid).child("postownerimage").setValue(imageurl);
 
         // user post
 
-        mAuth = FirebaseAuth.getInstance();
-        String user_id = mAuth.getCurrentUser().getUid();
+        
 
-        mDatabaseRefuserpost.child(user_id).child(postid).child("PostId").setValue(postid);
-        mDatabaseRefuserpost.child(user_id).child(postid).child("PostOwnerName").setValue(userName);
-        mDatabaseRefuserpost.child(user_id).child(postid).child("PostImage").setValue(url);
-        mDatabaseRefuserpost.child(user_id).child(postid).child("PostText").setValue(text);
-        mDatabaseRefuserpost.child(user_id).child(postid).child("PostOwnerImage").setValue(imageurl);
+
+        mDatabaseRefuserpost.child(user_id).child(postid).child("postid").setValue(postid);
+        mDatabaseRefuserpost.child(user_id).child(postid).child("userid").setValue(user_id);
+        mDatabaseRefuserpost.child(user_id).child(postid).child("postownername").setValue(userName);
+        mDatabaseRefuserpost.child(user_id).child(postid).child("postimage").setValue(url);
+        mDatabaseRefuserpost.child(user_id).child(postid).child("posttext").setValue(text);
+        mDatabaseRefuserpost.child(user_id).child(postid).child("postownerimage").setValue(imageurl);
 
 
 

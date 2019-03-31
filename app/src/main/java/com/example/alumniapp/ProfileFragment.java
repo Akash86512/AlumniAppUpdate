@@ -10,7 +10,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.constraint.Constraints;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +41,8 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
@@ -54,6 +60,13 @@ public class ProfileFragment extends Fragment {
     private DatabaseReference mDatabaseRef,mDatabaseRef1;
 
 
+    private RecyclerView recyclerView1;
+    DatabaseReference mDatabaseRef11;
+
+    List<HomePageData> profilepostdata=new ArrayList<HomePageData>();
+    RecyclerAdapterHomepage recyclerAdapterHomepage1;
+
+    String id;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -76,7 +89,10 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout for this fragment
 
         database = FirebaseDatabase.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        id = mAuth.getCurrentUser().getUid();
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("Users");
+        mDatabaseRef11 = FirebaseDatabase.getInstance().getReference("userpost").child(id);
 
 
         mAuth = FirebaseAuth.getInstance();
@@ -110,6 +126,19 @@ public class ProfileFragment extends Fragment {
 
 
 
+
+        recyclerView1 =view.findViewById(R.id.profilerecycle);
+
+
+        RecyclerView.LayoutManager recyce = new GridLayoutManager(getActivity(),1);
+        /// RecyclerView.LayoutManager recyce = new LinearLayoutManager(MainActivity.this);
+        // recycle.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
+        recyclerView1.setLayoutManager(recyce);
+        recyclerView1.setItemAnimator( new DefaultItemAnimator());
+
+
+
+        load();
         return view;
     }
 
@@ -270,4 +299,46 @@ String url;
 
     }
 
-}
+
+
+    void load()
+    {
+
+        mDatabaseRef11.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+
+
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+
+
+                    HomePageData homePageData1=postSnapshot.getValue(HomePageData.class);
+
+                    profilepostdata.add(homePageData1);
+
+
+                }
+
+
+                recyclerAdapterHomepage1=new RecyclerAdapterHomepage(profilepostdata,getActivity());
+                recyclerView1.setAdapter(recyclerAdapterHomepage1);
+
+
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(Constraints.TAG, "Failed to read value.", error.toException());
+            }
+        });
+
+    }
+
+
+    }
+
